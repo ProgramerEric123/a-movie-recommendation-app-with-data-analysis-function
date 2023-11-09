@@ -8,8 +8,8 @@ import numpy as np
 plt.style.use('ggplot')
 
 # Title
-st.markdown('<h1 style="text-align: center;">A movie Recommendation App</h1>', unsafe_allow_html=True)
-st.markdown('<p style="font-size: 16px; font-weight: bold;text-align: center;">(by Group3)</p>', unsafe_allow_html=True)
+st.markdown('<h1 style="text-align: center;"> Movie Recommendation </h1>', unsafe_allow_html=True)
+
 st.markdown('---')
 # Load Data
 df = pd.read_csv('Highest Holywood Grossing Movies.csv')
