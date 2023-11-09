@@ -2,10 +2,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import streamlit as st
 
-# 用你的CSV文件路径替换下面的文件路径
+# Replace with your CSV file path
 csv_file = "Highest Holywood Grossing Movies.csv"
 
-# 使用pandas读取CSV文件
+# Read the CSV file using pandas
 df = pd.read_csv(csv_file)
 
 # Set the plotting style
@@ -14,13 +14,18 @@ plt.style.use("ggplot")
 # Create a Streamlit app with a title
 st.title("Genre Distribution in Top 1000 Highest Grossing Hollywood Movies")
 
+# Create a sidebar for the question
+st.sidebar.title("What's the genre distribution in Top 1000 Highest Grossing Hollywood Movies?")
+st.markdown('''##### ~The bar chart below displays all the genre counts  .''')
 # Sidebar to show data labels
 show_labels = st.checkbox("Show Data Labels")
 
-# 将Genre列中的数据转换为列表
+
+
+# Convert the data in the Genre column to a list
 genre_list = df['Genre'].apply(eval)
 
-# 统计不同genre的频数
+# Count the frequency of different genres
 genre_counts = {}
 for genres in genre_list:
     for genre in genres:
@@ -29,15 +34,15 @@ for genres in genre_list:
         else:
             genre_counts[genre] = 1
 
-# 统计不同genre的数量并排序
+# Count and sort different genres
 sorted_genre_counts = sorted(genre_counts.items(), key=lambda x: x[1], reverse=True)
 
-# 准备数据用于条形图
+# Prepare data for the bar chart
 rank = [rank + 1 for rank in range(len(sorted_genre_counts))]
 genres = [genre[0] for genre in sorted_genre_counts]
 counts = [genre[1] for genre in sorted_genre_counts]
 
-# 绘制条形图
+# Create a horizontal bar chart
 fig, ax = plt.subplots(figsize=(10, 6))
 bars = ax.barh(rank, counts, color='skyblue')
 ax.set_yticks(rank)
@@ -47,7 +52,7 @@ ax.set_ylabel('Genre')
 ax.set_title('Genre Counts (sorted by count)')
 ax.invert_yaxis()  # Invert the y-axis to have the highest count at the top
 
-# 添加数据标签，如果用户选择显示数据标签
+# Add data labels if the user chooses to show them
 if show_labels:
     for bar, count in zip(bars, counts):
         ax.text(count + 5, bar.get_y() + bar.get_height() / 2, str(count), ha='center')
@@ -55,24 +60,24 @@ if show_labels:
 # Show the plot in the Streamlit app
 st.pyplot(fig)
 
-# 绘制饼状图
-st.subheader("Pie Chart")
+# Create a pie chart
+st.markdown('''##### ~The piechart below may give you a general view on genre distribution in Top 1000 Highest Grossing Hollywood Movies.''')
 
-# 给出排名前十的genre
+# Provide the top ten genres
 top_genres = genres[:10]
 top_counts = counts[:10]
 
-# 将其余的genre合并为"Other Genres"
+# Combine the remaining genres into "Other Genres"
 other_genres = genres[10:]
 other_counts = counts[10:]
 other_counts_combined = sum(other_counts)
 
-# 合并为"Other Genres"
+# Combine into "Other Genres"
 if len(other_genres) > 0:
     top_genres.append("Other Genres")
     top_counts.append(other_counts_combined)
 
-# 绘制饼状图
+# Create a pie chart
 fig, ax = plt.subplots(figsize=(8, 8))
 ax.pie(top_counts, labels=top_genres, autopct='%1.1f%%', startangle=140)
 ax.set_title('Genre Distribution in Top 1000 Highest Grossing Hollywood Movies')

@@ -12,24 +12,29 @@ df = pd.read_csv(csv_file)
 plt.style.use("ggplot")
 
 # Add a title
-st.title("Release year distribution of Top 1000 Highest Grossing Hollywood Movies Releases by year")
+st.title("Release year distribution of Top 1000 Highest Grossing Hollywood Movies ")
 
 # Extract the release year and create a new column
-df['Release Year'] = df['Release Date'].str.split('-').str[0]
+df['Release Year'] = pd.to_datetime(df['Release Date']).dt.year
 
 # Calculate the frequency of each year
 year_counts = df['Release Year'].value_counts().sort_index()
 
-# Plot a frequency histogram
-plt.figure(figsize=(12, 6))
-year_counts.plot(kind='bar')
-plt.title('Frequency Histogram of Top 1000 Highest Grossing Hollywood Movies Releases by Year')
-plt.xlabel('Year')
-plt.ylabel('Count')
-plt.show()
+# Create a sidebar for the selectbox
+st.sidebar.title("Please select the year that you are interested in and then you will see something wonderful ")
+sorted_years = sorted(df['Release Year'].unique())
+selected_year = st.sidebar.selectbox("Select a Release Year", sorted_years)
 
-# Create a radio button to allow the user to select a year
-selected_year = st.selectbox("Select a Release Year", df['Release Year'].unique())
+st.markdown('''##### ~The histogram below may give you an overal view on realease year distribution .''')
+# Plot a frequency histogram
+fig, ax = plt.subplots(figsize=(12, 6))
+year_counts.plot(kind='bar', ax=ax)
+ax.set_title('Frequency Histogram of Top 1000 Highest Grossing Hollywood Movies Releases by Year')
+ax.set_xlabel('Year')
+ax.set_ylabel('Count')
+st.pyplot(fig)
+
+
 
 # Filter the data based on the user's selected year
 filtered_df = df[df['Release Year'] == selected_year]
@@ -45,7 +50,7 @@ for genres in genre_list:
             genre_counts[genre] = 1
 
 # Create a bar chart
-st.subheader("Genre Counts by Year")
+st.markdown('''##### ~The bar chart below tells the genre distribution in your selected year.''')
 fig, ax = plt.subplots(figsize=(10, 6))
 genres = list(genre_counts.keys())
 counts = list(genre_counts.values())
@@ -60,11 +65,11 @@ st.pyplot(fig)
 
 # Find the top three most popular genres
 popular_genres = dict(sorted(genre_counts.items(), key=lambda x: x[1], reverse=True)[:3])
-st.subheader("Top 3 Popular Genres")
+st.subheader("Top Popular Genres in "+str(selected_year))
 st.write(popular_genres)
 
 # Find the top three movies by worldwide sales
 # Make sure the column name matches your data
 top_movies = filtered_df.nlargest(3, 'World Wide Sales (in $)')
-st.subheader("Top 3 Movies by Worldwide Sales")
-st.write(top_movies[['Title', 'World Wide Sales (in $)']])
+st.subheader("The table below displays  movie list by worldwide sales in "+str(selected_year))
+st.write(top_movies[['Title', 'Genre','World Wide Sales (in $)','Running Time']])
