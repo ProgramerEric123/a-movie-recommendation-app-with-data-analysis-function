@@ -1,4 +1,4 @@
-## A Movie Recommendation App With Data Analysis Function
+m## Movie Assistant
 ##### by Group 3
 
 
