@@ -1,4 +1,4 @@
-m## Movie Assistant
+## Movie Assistant
 ##### by Group 3
 
 
