@@ -25,14 +25,8 @@ distributors = [
 ]
 df["Distributor"] = df["Distributor"].apply(lambda x: "Others" if x not in distributors else x)
 
-# add a ration to select genre
-st.sidebar.info('**Step 1:**')
-opt1 = ('Action','Adventure', 'Animation', 'Comedy', 'Drama', 'Family', 'Fantasy', 'Musical','Sci-Fi')
-Genre_filter = st.sidebar.radio("**Choose your preferred genre**", opt1)
-con = df["Genre"].apply(lambda x: True if Genre_filter in x else False)
-
 # add a multiselect by Distributor
-st.sidebar.info('**Step 2:**')
+st.sidebar.info('**Step 1:**')
 opt2 = ['Twentieth Century Fox', 
         'Walt Disney Studios Motion Pictures', 
         'Paramount Pictures', 
@@ -41,10 +35,18 @@ opt2 = ['Twentieth Century Fox',
         'Warner Bros.', 
         'Others']
 Distributor_filter = st.sidebar.multiselect(
-    '**choose your preferred distributor**', 
+    '**Choose your preferred distributor**', 
     opt2,  # add 'Others' to include all other distributors
-    default=['Twentieth Century Fox', 'Walt Disney Studios Motion Pictures']  #I am not sure about the default
+    default=['Twentieth Century Fox', 'Walt Disney Studios Motion Pictures']  
 )
+
+# add a ration to select genre
+st.sidebar.info('**Step 2:**')
+opt1 = ('Action','Adventure', 'Animation', 'Comedy', 'Drama', 'Family', 'Fantasy', 'Musical','Sci-Fi')
+Genre_filter = st.sidebar.radio("**Choose your preferred genre**", opt1)
+con = df["Genre"].apply(lambda x: True if Genre_filter in x else False)
+
+
 
 # add multiselect by years
 years = [list(range(start_year, start_year + 5)) for start_year in range(df['Year'].min(), df['Year'].max() + 1, 5)]
@@ -64,32 +66,6 @@ else:
 
 # Group the data by 'Distributor' and calculate the average sales figures for displayed distributors and others.
 grouped_sales = df0.groupby('Distributor')[sales_cols].mean().reset_index()
-
-# Create a bar chart
-st.markdown('<h2 style="text-align: center;">Average Sales by Distributor</h2>', unsafe_allow_html=True)
-fig, ax = plt.subplots(figsize=(9, 8))
-x = np.arange(len(grouped_sales['Distributor'])) 
-width = 0.2  
-
-rects1 = ax.bar(x - width, grouped_sales['Domestic Sales (in $)'], width, label='Average Domestic Sales')
-rects2 = ax.bar(x, grouped_sales['International Sales (in $)'], width, label='Average International Sales')
-rects3 = ax.bar(x + width, grouped_sales['World Wide Sales (in $)'], width, label='Average Worldwide Sales')
-
-# Add some text for labels, title, and custom x-axis tick labels
-ax.set_ylabel('Sales in $')
-ax.set_title('Average Sales by Distributor')
-ax.set_xticks(x)
-ax.set_xticklabels(grouped_sales['Distributor'], rotation=45)
-ax.legend()
-
-ax.bar_label(rects1, padding=0, rotation=90, label_type="center", color="white")
-ax.bar_label(rects2, padding=0, rotation=90, label_type="center", color="white")
-ax.bar_label(rects3, padding=0, rotation=90, label_type="center", color="white")
-fig.tight_layout()
-
-# Display the plot in Streamlit app
-st.pyplot(fig)
-
 # pie data
 if len(Distributor_filter)==0 and len(selected_years)!=0:
     df1 = df[df['Year'].isin(selected_years) & con].copy()
@@ -116,6 +92,33 @@ ax.set_yticks([])
 ax.set_xlim(0, 4)
 ax.set_ylim(0, 4)
 st.pyplot(fig)
+
+# Create a bar chart
+st.markdown('<h2 style="text-align: center;">Average Sales by Distributor</h2>', unsafe_allow_html=True)
+fig, ax = plt.subplots(figsize=(9, 8))
+x = np.arange(len(grouped_sales['Distributor'])) 
+width = 0.2  
+
+rects1 = ax.bar(x - width, grouped_sales['Domestic Sales (in $)'], width, label='Average Domestic Sales')
+rects2 = ax.bar(x, grouped_sales['International Sales (in $)'], width, label='Average International Sales')
+rects3 = ax.bar(x + width, grouped_sales['World Wide Sales (in $)'], width, label='Average Worldwide Sales')
+
+# Add some text for labels, title, and custom x-axis tick labels
+ax.set_ylabel('Sales in $')
+ax.set_title('The barchart below may give you a general view on the average sales of distributors selected by you')
+ax.set_xticks(x)
+ax.set_xticklabels(grouped_sales['Distributor'], rotation=45)
+ax.legend()
+
+ax.bar_label(rects1, padding=0, rotation=90, label_type="center", color="white")
+ax.bar_label(rects2, padding=0, rotation=90, label_type="center", color="white")
+ax.bar_label(rects3, padding=0, rotation=90, label_type="center", color="white")
+fig.tight_layout()
+
+# Display the plot in Streamlit app
+st.pyplot(fig)
+
+
 
 # Display recommended movies
 st.markdown('<h2 style="text-align: center;">Recommended Movies Based on Your Choice</h2>', unsafe_allow_html=True)
